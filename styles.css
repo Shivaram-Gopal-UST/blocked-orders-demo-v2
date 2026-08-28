@@ -1,0 +1,99 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background: linear-gradient(180deg, #f4f6f8 0%, #edf3f7 100%);
+  font-family: "72", "Segoe UI", Arial, sans-serif;
+}
+
+#content {
+  height: 100%;
+}
+
+.sapMPage {
+  background: transparent;
+}
+
+.sapMPage > section {
+  padding: 1.5rem;
+}
+
+.sapMToolbar {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid #e5e5e5;
+  border-radius: 0.75rem 0.75rem 0 0;
+  padding: 0 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.sapMTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.sapMPanel {
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.sapMPanelContent {
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.sapMTable {
+  border-radius: 0 0 0.75rem 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.sapMListTblHeaderCell {
+  background: #f3f6f9;
+  color: #334155;
+  font-weight: 700;
+}
+
+.sapMListTblRow {
+  background: #ffffff;
+}
+
+.sapMListTblRow:hover {
+  background: #f8fbff;
+}
+
+.sapMObjectNumber {
+  font-size: 1rem;
+  color: #1f2937;
+}
+
+.sapMObjectStatusError {
+  background: #fff1f2;
+  border-radius: 0.5rem;
+}
+
+.sapMBtnAccept {
+  background: #e8f6ee;
+  border-color: #9ad0af;
+  color: #0f5132;
+}
+
+.sapMBtnAccept:hover {
+  background: #d9f2e4;
+}
+
+.sapMInputBase,
+.sapMSelect,
+.sapMSelectList,
+.sapMSelectListItem {
+  border-radius: 0.5rem;
+}
+
+.sapMLabel {
+  color: #475569;
+  font-weight: 600;
+}
+
+.sapMText {
+  color: #334155;
+}
