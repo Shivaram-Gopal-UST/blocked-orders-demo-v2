@@ -4,7 +4,11 @@ const path = require("path");
 
 const port = Number(process.env.PORT || 8080);
 const sapServiceUrl = "https://s4hanadev.eastus2.cloudapp.azure.com:44300/sap/opu/odata/sap/API_SALES_ORDER_SRV";
-const blockedOrdersQuery = "$filter=OverallSDDocumentRejectionSts ne '' or DeliveryBlockReason ne '' or BillingBlockReason ne ''&$select=SalesOrder,SoldToParty,TotalNetAmount,TransactionCurrency,OverallSDDocumentRejectionSts,DeliveryBlockReason,BillingBlockReason&$format=json";
+const blockedOrdersQuery = new URLSearchParams({
+  "$filter": "(OverallSDDocumentRejectionSts eq 'B' or OverallSDDocumentRejectionSts eq 'C' or DeliveryBlockReason ne '' or HeaderBillingBlockReason ne '')",
+  "$select": "SalesOrder,SoldToParty,TotalNetAmount,TransactionCurrency,OverallSDDocumentRejectionSts,DeliveryBlockReason,HeaderBillingBlockReason",
+  "$format": "json"
+}).toString();
 
 function sendJson(response, statusCode, payload) {
   response.writeHead(statusCode, { "Content-Type": "application/json" });
@@ -29,21 +33,26 @@ async function getBlockedOrders(response) {
     });
 
     if (!sapResponse.ok) {
-      sendJson(response, sapResponse.status, { error: `SAP returned HTTP ${sapResponse.status}.` });
+      const sapError = await sapResponse.text();
+      const message = sapError.match(/<message[^>]*>([^<]+)<\/message>/i)?.[1]
+        || sapError.match(/<errordetail[^>]*>([^<]+)<\/errordetail>/i)?.[1]
+        || `SAP returned HTTP ${sapResponse.status}.`;
+      sendJson(response, sapResponse.status, { error: message });
       return;
     }
 
-    const payload = await sapResponse.json();
+    const responseText = await sapResponse.text();
+    const payload = JSON.parse(responseText);
     const orders = (payload.d?.results || payload.value || []).map((order) => ({
       id: order.SalesOrder,
       customer: order.SoldToParty || "Unknown customer",
       amount: Number(order.TotalNetAmount || 0),
       currency: order.TransactionCurrency || "",
-      reason: order.OverallSDDocumentRejectionSts
+      reason: ["B", "C"].includes(order.OverallSDDocumentRejectionSts)
         ? `Document rejection: ${order.OverallSDDocumentRejectionSts}`
         : order.DeliveryBlockReason
           ? `Delivery block: ${order.DeliveryBlockReason}`
-          : `Billing block: ${order.BillingBlockReason}`
+          : `Billing block: ${order.HeaderBillingBlockReason}`
     }));
 
     sendJson(response, 200, { blockedOrders: orders });
