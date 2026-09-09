@@ -38,8 +38,7 @@ async function fetchOrders() {
         : `Billing block: ${order.HeaderBillingBlockReason}`
   }));
 
-  const outputPath = path.join(__dirname, "..", "data", "blocked-orders.json");
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  const outputPath = path.join(__dirname, "..", "blocked-orders.json");
   fs.writeFileSync(outputPath, JSON.stringify({ blockedOrders: orders }));
   console.log(`Wrote ${orders.length} blocked orders to ${outputPath}`);
 }

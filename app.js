@@ -54,7 +54,7 @@ sap.ui.getCore().attachInit(function () {
       try {
         payload = JSON.parse(responseText);
       } catch (parseError) {
-        response = await fetch("data/blocked-orders.json");
+        response = await fetch("blocked-orders.json");
         payload = await response.json();
       }
 

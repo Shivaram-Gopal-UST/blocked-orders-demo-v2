@@ -1,6 +1,6 @@
 # GitHub Pages data flow
 
-GitHub Pages cannot run `server.js` or use secrets at browser runtime. The deployment workflow therefore fetches blocked orders during the GitHub Actions build with `SAP_USERNAME` and `SAP_PASSWORD`, then publishes `data/blocked-orders.json` with the static site.
+GitHub Pages cannot run `server.js` or use secrets at browser runtime. The deployment workflow therefore fetches blocked orders during the GitHub Actions build with `SAP_USERNAME` and `SAP_PASSWORD`, then publishes `blocked-orders.json` with the static site.
 
 Configure both secrets in the repository under **Settings > Secrets and variables > Actions**. Each deployment refreshes the published snapshot. Local development continues to use the credential-protected `/api/orders` endpoint.
 
