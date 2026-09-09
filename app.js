@@ -1,54 +1,11 @@
 sap.ui.getCore().attachInit(function () {
-  const blockedOrders = [
-    {
-      id: 101,
-      customer: "Contoso Retail",
-      amount: 15420.75,
-      currency: "USD",
-      reason: "Credit limit exceeded"
-    },
-    {
-      id: 102,
-      customer: "Northwind Traders",
-      amount: 8935.4,
-      currency: "USD",
-      reason: "Missing VAT confirmation"
-    },
-    {
-      id: 103,
-      customer: "Bluebird Logistics",
-      amount: 22250.0,
-      currency: "USD",
-      reason: "Duplicate delivery address"
-    },
-    {
-      id: 104,
-      customer: "Fabrikam Health",
-      amount: 6780.95,
-      currency: "USD",
-      reason: "Payment terms review required"
-    },
-    {
-      id: 105,
-      customer: "Adventure Works",
-      amount: 13499.99,
-      currency: "USD",
-      reason: "Blocked by compliance review"
-    }
-  ];
-
   const oModel = new sap.ui.model.json.JSONModel({
-    blockedOrders: blockedOrders
+    blockedOrders: []
   });
 
   const reasonItems = [
     new sap.ui.core.Item({ key: "All", text: "All reasons" })
   ];
-
-  const uniqueReasons = [...new Set(blockedOrders.map((order) => order.reason))];
-  uniqueReasons.forEach((reason) => {
-    reasonItems.push(new sap.ui.core.Item({ key: reason, text: reason }));
-  });
 
   const reasonFilter = new sap.m.Select({
     width: "17rem",
@@ -78,8 +35,36 @@ sap.ui.getCore().attachInit(function () {
     oTable.getBinding("items").filter(filters);
   }
 
+  function updateReasonItems(orders) {
+    reasonFilter.removeAllItems();
+    reasonFilter.addItem(new sap.ui.core.Item({ key: "All", text: "All reasons" }));
+    [...new Set(orders.map((order) => order.reason))].forEach((reason) => {
+      reasonFilter.addItem(new sap.ui.core.Item({ key: reason, text: reason }));
+    });
+    reasonFilter.setSelectedKey("All");
+  }
+
+  async function loadOrders() {
+    countStatus.setText("Loading blocked orders...");
+    try {
+      const response = await fetch("/api/orders");
+      const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error || "The SAP request failed.");
+      }
+      oModel.setProperty("/blockedOrders", payload.blockedOrders);
+      updateReasonItems(payload.blockedOrders);
+      filterByReason("All");
+      updateSummary();
+    } catch (error) {
+      oModel.setProperty("/blockedOrders", []);
+      countStatus.setText("SAP connection failed");
+      oTable.setNoDataText(error.message);
+    }
+  }
+
   const countStatus = new sap.m.ObjectStatus({
-    text: blockedOrders.length + " blocked orders",
+    text: "Loading blocked orders...",
     state: sap.ui.core.ValueState.Error
   });
 
@@ -174,7 +159,8 @@ sap.ui.getCore().attachInit(function () {
                           new sap.m.Button({
                             text: "Refresh",
                             type: "Transparent",
-                            icon: "sap-icon://refresh"
+                            icon: "sap-icon://refresh",
+                            press: loadOrders
                           })
                         ]
                       })
@@ -192,6 +178,6 @@ sap.ui.getCore().attachInit(function () {
 
   oTable.setModel(oModel);
   filterByReason("All");
-  updateSummary();
   app.placeAt("content");
+  loadOrders();
 });
