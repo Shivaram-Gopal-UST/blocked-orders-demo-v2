@@ -43,8 +43,9 @@ jobs:
       - name: Prepare Pages artifact
         run: |
           mkdir -p _site
-          cp index.html app.js styles.css _site/
+          cp index.html styles.css _site/
           cp blocked-orders.json _site/
+          node scripts/prepare-pages.js
 
       - name: Upload static site artifact
         uses: actions/upload-pages-artifact@v3

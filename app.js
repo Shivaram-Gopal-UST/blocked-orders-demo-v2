@@ -54,8 +54,10 @@ sap.ui.getCore().attachInit(function () {
       try {
         payload = JSON.parse(responseText);
       } catch (parseError) {
-        response = await fetch("blocked-orders.json");
-        payload = await response.json();
+        if (!window.__BLOCKED_ORDERS__) {
+          throw new Error("No SAP snapshot is available on the deployed site.");
+        }
+        payload = window.__BLOCKED_ORDERS__;
       }
 
       if (!response.ok) {
