@@ -40,10 +40,16 @@ jobs:
           SAP_PASSWORD: ${{ secrets.SAP_PASSWORD }}
           NODE_TLS_REJECT_UNAUTHORIZED: "0"
 
+      - name: Prepare Pages artifact
+        run: |
+          mkdir -p _site/data
+          cp index.html app.js styles.css _site/
+          cp data/blocked-orders.json _site/data/
+
       - name: Upload static site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
   deploy:
     needs: build
