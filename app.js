@@ -50,6 +50,7 @@ sap.ui.getCore().attachInit(function () {
       let response = await fetch("/api/orders");
       let responseText = await response.text();
       let payload;
+      let loadedFromSnapshot = false;
 
       try {
         payload = JSON.parse(responseText);
@@ -58,9 +59,10 @@ sap.ui.getCore().attachInit(function () {
           throw new Error("No SAP snapshot is available on the deployed site.");
         }
         payload = window.__BLOCKED_ORDERS__;
+        loadedFromSnapshot = true;
       }
 
-      if (!response.ok) {
+      if (!response.ok && !loadedFromSnapshot) {
         throw new Error(payload.error || "The SAP request failed.");
       }
       oModel.setProperty("/blockedOrders", payload.blockedOrders);
