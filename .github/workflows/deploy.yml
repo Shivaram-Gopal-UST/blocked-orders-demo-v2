@@ -31,6 +31,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Fetch blocked orders from SAP
+        run: node scripts/fetch-orders.js
+        env:
+          SAP_USERNAME: ${{ secrets.SAP_USERNAME }}
+          SAP_PASSWORD: ${{ secrets.SAP_PASSWORD }}
+          NODE_TLS_REJECT_UNAUTHORIZED: "0"
+
       - name: Upload static site artifact
         uses: actions/upload-pages-artifact@v3
         with:

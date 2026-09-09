@@ -47,14 +47,15 @@ sap.ui.getCore().attachInit(function () {
   async function loadOrders() {
     countStatus.setText("Loading blocked orders...");
     try {
-      const response = await fetch("/api/orders");
-      const responseText = await response.text();
+      let response = await fetch("/api/orders");
+      let responseText = await response.text();
       let payload;
 
       try {
         payload = JSON.parse(responseText);
       } catch (parseError) {
-        throw new Error("The deployed app cannot reach its SAP API. GitHub Pages serves this page, but cannot run the server-side SAP proxy.");
+        response = await fetch("data/blocked-orders.json");
+        payload = await response.json();
       }
 
       if (!response.ok) {
